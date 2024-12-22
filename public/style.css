@@ -99,7 +99,7 @@ h4, h6{
     margin:             0 auto;    
 }
 #cabecalho > tr > th{   
-    padding:            1px 10px;          /* Mantém o espaçamento interno */
+    padding:            1px 20px;          /* Mantém o espaçamento interno */
     text-align:         left;               /* Alinha o texto à esquerda */
     position:           relative;           /* Necessário para o ajuste com o pseudo-elemento */
 }
