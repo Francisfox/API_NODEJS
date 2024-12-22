@@ -76,15 +76,12 @@ function filterTable() {
   }   
   veto.forEach(element => {
     tr = document.createElement('tr')
-    td1 = document.createElement('td')
     td2 = document.createElement('td')
     td3 = document.createElement('td')
-  
-    td1.innerText = element.Modelo
+    
     td2.innerText = element.Descrição
     td3.innerText = element.CÓDIGO
-  
-    tr.append(td1)
+
     tr.append(td2)
     tr.append(td3)
   
@@ -151,15 +148,12 @@ function modeloSelecionado(){
   }) 
   vet.forEach(element => {
     tr = document.createElement('tr')
-    td1 = document.createElement('td')
     td2 = document.createElement('td')
     td3 = document.createElement('td')
   
-    td1.innerText = element.Modelo
     td2.innerText = element.Descrição
     td3.innerText = element.CÓDIGO
   
-    tr.append(td1)
     tr.append(td2)
     tr.append(td3)
   
