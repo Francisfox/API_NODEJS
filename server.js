@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path'); // Necessário para lidar com caminhos de arquivo
 const app = express();
 const port = 3001;
 
@@ -7,7 +8,7 @@ app.use(express.static('public'));
 
 // Rota para a página principal
 app.get('/', (req, res) => {
-    res.send('<h1>Bem-vindo ao Node.js!</h1><p>Esta é uma página simples.</p>');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Inicia o servidor
