@@ -46,7 +46,6 @@ function carregaModelo() {
   },2000)
 }
 function carregamento() {   
-  registrarAcesso()
   fetch("dados.json").then((response) => {
     response.json().then((data) => {
       //processarDados(itens);      
@@ -126,6 +125,7 @@ function carregaPin(modelo){
   md.value=""
 }
 function modeloSelecionado(){
+  registrarAcesso();
   const md = document.getElementById('formGroupExampleInput')
   const inp = document.getElementById('input-btModelo'); 
   const rdPecas = document.getElementById('radio_Pecas')
