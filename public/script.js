@@ -189,3 +189,26 @@ function filterModel() {
     row.style.display = match ? "" : "none"; 
   } 
 }
+function registrarAcesso() {
+    const logList = document.getElementById('logList');
+    const agora = new Date().toLocaleString(); // Captura a data e hora atual
+    const login = document.getElementById('login').value; // Obtém o login digitado pelo usuário
+    // Envia o registro para o servidor
+    fetch('http://localhost:3000/api/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login: login, hora: agora })
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Registro enviado com sucesso:", response);
+        } else {
+            console.error("Erro ao enviar o registro:", response.statusText);
+            alert("Erro ao registrar o acesso no servidor!");
+        }
+    })
+    .catch(error => {
+        console.error("Erro ao enviar o registro:", error);
+        alert("Erro ao registrar o acesso no servidor!");
+    });
+}
