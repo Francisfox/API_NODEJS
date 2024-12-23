@@ -195,7 +195,7 @@ function registrarAcesso() {
     const agora = new Date().toLocaleString(); // Captura a data e hora atual
     const login = document.getElementById('login').value; // Obtém o login digitado pelo usuário
     // Envia o registro para o servidor
-    fetch('http://localhost:3000/api/registro', {
+    fetch('http://localhost:3001/api/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ login: login, hora: agora })
