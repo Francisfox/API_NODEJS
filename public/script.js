@@ -45,7 +45,8 @@ function carregaModelo() {
     })
   },2000)
 }
-function carregamento() {       
+function carregamento() {   
+  registrarAcesso()
   fetch("dados.json").then((response) => {
     response.json().then((data) => {
       //processarDados(itens);      
