@@ -1,44 +1,43 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path'); // Necessário para lidar com caminhos de arquivo
-const app = express();
-const port = 3001;
-// Middleware para processar JSON
-app.use(express.json());
-// Middleware para servir arquivos estáticos da pasta "public"
-app.use(express.static('public'));
+import express from 'express'
+import http from 'http'
+import createGame from './public/game.js'
+import socketio from 'socket.io'
 
-// Rota para a página principal
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+const app = express()
+const server = http.createServer(app)
+const sockets = socketio(server)
 
-// Endpoint para registrar acessos
-app.post('/api/registro', (req, res) => {
-    const { login, hora } = req.body;
+app.use(express.static('public'))
 
-    if (!login || !hora) {
-        return res.status(400).json({ error: 'Login e hora são obrigatórios!' });
-    }
+const game = createGame()
+game.start()
 
-    const registro = { login, hora };
+game.subscribe((command) => {
+    console.log(`> Emitting ${command.type}`)
+    sockets.emit(command.type, command)
+})
 
-    // Caminho para o arquivo na pasta "public"
-    const filePath = path.join(__dirname, 'public', 'registros.txt');
+sockets.on('connection', (socket) => {
+    const playerId = socket.id
+    console.log(`> Player connected: ${playerId}`)
 
-    // Salva o registro no arquivo na pasta "public"
-    fs.appendFile(filePath, JSON.stringify(registro) + '\n', (err) => {
-        if (err) {
-            console.error('Erro ao salvar registro:', err);
-            return res.status(500).json({ error: 'Erro ao salvar registro.' });
-        }
+    game.addPlayer({ playerId: playerId })
 
-        //console.log('Registro salvo:', registro);
-        res.status(201).json({ message: 'Registro salvo com sucesso!' });
-    });
-});
+    socket.emit('setup', game.state)
 
-// Inicia o servidor
-app.listen(port, () => {
-    console.log(`Servidor rodando em http://localhost:${port}`);
-});
+    socket.on('disconnect', () => {
+        game.removePlayer({ playerId: playerId })
+        console.log(`> Player disconnected: ${playerId}`)
+    })
+
+    socket.on('move-player', (command) => {
+        command.playerId = playerId
+        command.type = 'move-player'
+        
+        game.movePlayer(command)
+    })
+})
+
+server.listen(3000, () => {
+    console.log(`> Server listening on port: 3000`)
+})
