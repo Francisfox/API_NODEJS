@@ -1,13 +1,22 @@
 import express from 'express'
 import http from 'http'
-import createGame from './public/game.js'
+import createGame from './public/game/game.js'
 import socketio from 'socket.io'
+import path from 'path'
+import fs, { appendFile } from 'fs';
 
 const app = express()
 const server = http.createServer(app)
 const sockets = socketio(server)
 
+const filePathConected = './LOG/Conected.json';         // Local do arquivo JSON
+const filePathDesconected = './LOG/Desconected.json';   // Local do arquivo JSON
+
 app.use(express.static('public'))
+// Rota para servir o index.html dentro da pasta 'game'
+app.get('/game', (req, res) => {
+    res.sendFile(path.join(__dirname, 'game', 'index.html'));
+});
 
 const game = createGame()
 game.start()
@@ -20,14 +29,75 @@ game.subscribe((command) => {
 sockets.on('connection', (socket) => {
     const playerId = socket.id
     console.log(`> Player connected: ${playerId}`)
+    const connectionTime = new Date().toLocaleString();
+
+    const registroConexao = {
+        tipo: 'conexão',
+        ID: playerId,
+        horario: connectionTime,
+    };
+    // Lê o arquivo Conected.json para adicionar o novo registro
+    fs.readFile(filePathConected, 'utf8', (err, data) => {
+        let registros = [];
+
+        if (!err && data) {
+            try {
+                registros = JSON.parse(data); // Carrega os registros existentes
+            } catch (parseErr) {
+                console.error('Erro ao processar o conteúdo do arquivo JSON:', parseErr);
+            }
+        }
+
+        // Adiciona o novo registro
+        registros.push(registroConexao);
+
+        // Salva o novo conteúdo no arquivo
+        fs.writeFile(filePathConected, JSON.stringify(registros, null, 4), (writeErr) => {
+            if (writeErr) {
+                console.error('Erro ao gravar no arquivo JSON:', writeErr);
+            } else {
+                console.log(`> Registro de Conexão adicionado para o ID ${playerId}`);
+            }
+        });
+    });
 
     game.addPlayer({ playerId: playerId })
-
     socket.emit('setup', game.state)
 
     socket.on('disconnect', () => {
         game.removePlayer({ playerId: playerId })
         console.log(`> Player disconnected: ${playerId}`)
+        const disconnectionTime = new Date().toLocaleString();
+
+        const registroDesconexao = {
+            tipo: 'desconexão',
+            ID: playerId,
+            horario: disconnectionTime,
+        };
+        // Lê o arquivo Conected.json para adicionar o novo registro
+        fs.readFile(filePathDesconected, 'utf8', (err, data) => {
+            let registros = [];
+
+            if (!err && data) {
+                try {
+                    registros = JSON.parse(data); // Carrega os registros existentes
+                } catch (parseErr) {
+                    console.error('Erro ao processar o conteúdo do arquivo JSON:', parseErr);
+                }
+            }
+
+            // Adiciona o novo registro
+            registros.push(registroDesconexao);
+
+            // Salva o novo conteúdo no arquivo
+            fs.writeFile(filePathDesconected, JSON.stringify(registros, null, 4), (writeErr) => {
+                if (writeErr) {
+                    console.error('Erro ao gravar no arquivo JSON:', writeErr);
+                } else {
+                    console.log(`>> Registro de Desconexão adicionado para o ID ${playerId}`);
+                }
+            });
+        });
     })
 
     socket.on('move-player', (command) => {
