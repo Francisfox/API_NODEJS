@@ -36,7 +36,7 @@ const authenticateEmail = (req, res, next) => {
 // Middleware de autenticação para arquivos estáticos
 const authenticateStatic = (req, res, next) => {
   // Supondo que a autenticação seja verificada através de uma sessão ou token
-  if (req.isAuthenticated && req.isAuthenticated()) {
+  if (req.session && req.session.isAuthenticated) {
     return next();
   } else {
     res.redirect('/'); // Redireciona para a página de login se não autenticado
@@ -69,13 +69,9 @@ app.post('/login', (req, res) => {
     const { email, senha } = req.body;
 
     // Verifica se o e-mail está na lista de permitidos
-    if (!allowedEmails.includes(email)) {
-        return res.status(403).send('Acesso negado. E-mail não autorizado.');
-    }
-
-    // Verifica se a senha está correta
-    if (senha === 'Simpress') {
-        // Redireciona para a página index.html dentro da pasta game
+    if (allowedEmails.includes(email) && senha === 'Simpress') {
+        // Configurar a sessão do usuário como autenticada
+        req.session.isAuthenticated = true;
         res.redirect('/game/index.html');
     } else {
         res.status(401).send('Email ou senha incorretos.');
