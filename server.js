@@ -1,7 +1,3 @@
-
-javascript
-Copiar
-Editar
 import express from 'express';
 import http from 'http';
 import createGame from './public/game/game.js';
