@@ -4,6 +4,8 @@ import createGame from './public/game/game.js'
 import socketio from 'socket.io'
 import path from 'path'
 import fs, { appendFile } from 'fs';
+import { fileURLToPath } from 'url';
+
 
 const app = express()
 const server = http.createServer(app)
@@ -11,6 +13,9 @@ const sockets = socketio(server)
 
 const filePathConected = './LOG/Conected.json';         // Local do arquivo JSON
 const filePathDesconected = './LOG/Desconected.json';   // Local do arquivo JSON
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Lista de e-mails permitidos
 const allowedEmails = ['fsbrito@simpress.com.br'];
