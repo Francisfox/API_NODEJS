@@ -70,17 +70,25 @@ app.use((req, res, next) => {
 
 app.use(express.static('public'));
 
-app.post('/login', (req, res) => {
-  const { email, senha } = req.body;
-  console.log(email);
-  console.log(senha);
 
-  if (allowedEmails.includes(email) && senha === 'Simpress') {
-    req.session.isAuthenticated = true;
-    res.redirect('/game');
-  } else {
-    res.status(401).send('Email ou senha incorretos.');
-  }
+Olá! Para simplificar a rota POST de autenticação no seu aplicativo Express.js, onde o e-mail e a senha são fixos e conhecidos, você pode implementar a seguinte solução:
+
+javascript
+Copiar
+Editar
+app.post('/login', (req, res) => {
+    const { email, senha } = req.body;
+
+    // Verifica se o e-mail e a senha correspondem aos valores esperados
+    if (email === 'fsbrito@simpress.com.br' && senha === 'Simpress') {
+        // Configura a sessão do usuário como autenticada
+        req.session.isAuthenticated = true;
+        // Redireciona para a página do jogo
+        res.redirect('/game/index.html');
+    } else {
+        // Retorna erro 401 se as credenciais estiverem incorretas
+        res.status(401).send('Email ou senha incorretos.');
+    }
 });
 app.get('/conected', (req, res) => {
     fs.readFile(filePathConected, 'utf8', (err, data) => {
