@@ -17,6 +17,41 @@ app.use(express.static('public'))
 app.get('/game', (req, res) => {
     res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
+app.get('/conected', (req, res) => {
+    fs.readFile(filePathConected, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Erro ao ler o arquivo:', err);
+            return res.status(500).json({ error: 'Erro ao ler o arquivo' });
+        }
+
+        try {
+            // Tenta parsear o conteúdo JSON
+            const registros = JSON.parse(data); // O arquivo deve conter um JSON válido
+            res.json(registros); // Retorna o conteúdo como JSON
+        } catch (parseErr) {
+            console.error('Erro ao processar o conteúdo do arquivo:', parseErr);
+            res.status(500).json({ error: 'Erro ao processar o conteúdo do arquivo' });
+        }
+    });
+});
+// retornar o JSON do aquivo Desconected pela URL/desconected ou http://localhost:3000/desconected
+app.get('/desconected', (req, res) => {
+    fs.readFile(filePathDesconected, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Erro ao ler o arquivo:', err);
+            return res.status(500).json({ error: 'Erro ao ler o arquivo' });
+        }
+
+        try {
+            // Tenta parsear o conteúdo JSON
+            const registros = JSON.parse(data); // O arquivo deve conter um JSON válido
+            res.json(registros); // Retorna o conteúdo como JSON
+        } catch (parseErr) {
+            console.error('Erro ao processar o conteúdo do arquivo:', parseErr);
+            res.status(500).json({ error: 'Erro ao processar o conteúdo do arquivo' });
+        }
+    });
+});
 
 const game = createGame()
 game.start()
