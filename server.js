@@ -28,6 +28,18 @@ const authenticateEmail = (req, res, next) => {
 
   next();
 };
+// Middleware de autenticação para arquivos estáticos
+const authenticateStatic = (req, res, next) => {
+  // Supondo que a autenticação seja verificada através de uma sessão ou token
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
+  } else {
+    res.redirect('/login'); // Redireciona para a página de login se não autenticado
+  }
+};
+
+// Use o middleware de autenticação antes do middleware estático
+app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
 
 app.use(express.urlencoded({ extended: true }));
 // Rota protegida para servir o index.html
