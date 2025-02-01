@@ -5,7 +5,8 @@ import socketio from 'socket.io'
 import path from 'path'
 import fs, { appendFile } from 'fs';
 import { fileURLToPath } from 'url';
-
+import express from 'express';
+import session from 'express-session';
 
 const app = express()
 const server = http.createServer(app)
@@ -42,7 +43,13 @@ const authenticateStatic = (req, res, next) => {
     res.redirect('/'); // Redireciona para a página de login se não autenticado
   }
 };
-
+app.use(express.json()); // Middleware para parsing de JSON
+app.use(session({
+    secret: 'seu_segredo_aqui',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true } // Defina como true se estiver usando HTTPS
+}));
 app.use(express.urlencoded({ extended: true }));
 // Use o middleware de autenticação antes do middleware estático
 app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
