@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Painel de Bloqueio</title>    
-        <link rel="stylesheet" href="build/css/Style.css">
-    </head>
-    <body>
-        <form class="form" action="https://api-nodejs-2.onrender.com/game" method="POST">
-            <div class="card">  
-                <div class="card-top">
-                    <h2 class="title">Painel de Bloqueio</h2>
-                    <p>Consulta Simpress</p>
-                </div>
-                <div class="card-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Digite seu email" required>
-                </div>            
-                <div class="card-group">
-                    <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
-                </div>
-                
-                <div class="card-group">
-                    <label for="lembrar"><input type="checkbox" id="lembrar" name="lembrar">Lembre-me</label>
-                </div>
-                <div class="card-group btn">
-                    <button type="submit">ACESSAR</button>
-                </div>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Bloqueio</title>    
+    <link rel="stylesheet" href="build/css/Style.css">
+</head>
+<body>
+    <form class="form" action="https://api-nodejs-2.onrender.com/login" method="POST">
+        <div class="card">  
+            <div class="card-top">
+                <h2 class="title">Painel de Bloqueio</h2>
+                <p>Consulta Simpress</p>
             </div>
-        </form>
-    </body>
+            <div class="card-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+            </div>            
+            <div class="card-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+            </div>
+            <div class="card-group">
+                <label for="lembrar"><input type="checkbox" id="lembrar" name="lembrar">Lembre-me</label>
+            </div>
+            <div class="card-group btn">
+                <button type="submit">ACESSAR</button>
+            </div>
+        </div>
+    </form>
+</body>
 </html>
