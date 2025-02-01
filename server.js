@@ -32,7 +32,7 @@ const authenticateEmail = (req, res, next) => {
 app.use(express.urlencoded({ extended: true }));
 // Rota protegida para servir o index.html
 app.get('/game', authenticateEmail, (req, res) => {
-  res.sendFile(path.join(__dirname, 'game', 'index.html'));
+  res.sendFile(path.join(__dirname, 'game', 'game/index.html'));
 });
 // Middleware para definir cabeçalhos CORS manualmente
 app.use((req, res, next) => {
