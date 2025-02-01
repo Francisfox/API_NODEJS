@@ -39,7 +39,7 @@ const authenticateStatic = (req, res, next) => {
   if (req.isAuthenticated && req.isAuthenticated()) {
     return next();
   } else {
-    res.redirect('/login'); // Redireciona para a página de login se não autenticado
+    res.redirect('/'); // Redireciona para a página de login se não autenticado
   }
 };
 
@@ -49,7 +49,7 @@ app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')
 app.use(express.urlencoded({ extended: true }));
 // Rota protegida para servir o index.html
 app.get('/game', authenticateEmail, (req, res) => {
-  res.sendFile(path.join(__dirname, 'game', 'game/index.html'));
+  res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
 // Middleware para definir cabeçalhos CORS manualmente
 app.use((req, res, next) => {
