@@ -70,12 +70,6 @@ app.use((req, res, next) => {
 
 app.use(express.static('public'));
 
-
-Olá! Para simplificar a rota POST de autenticação no seu aplicativo Express.js, onde o e-mail e a senha são fixos e conhecidos, você pode implementar a seguinte solução:
-
-javascript
-Copiar
-Editar
 app.post('/login', (req, res) => {
     const { email, senha } = req.body;
 
