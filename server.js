@@ -1,25 +1,28 @@
-import express from 'express'
-import http from 'http'
-import createGame from './public/game/game.js'
-import socketio from 'socket.io'
-import path from 'path'
-import fs, { appendFile } from 'fs';
+
+javascript
+Copiar
+Editar
+import express from 'express';
+import http from 'http';
+import createGame from './public/game/game.js';
+import socketio from 'socket.io';
+import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 
-const app = express()
-const server = http.createServer(app)
-const sockets = socketio(server)
+const app = express();
+const server = http.createServer(app);
+const sockets = socketio(server);
 
-const filePathConected = './LOG/Conected.json';         // Local do arquivo JSON
-const filePathDesconected = './LOG/Desconected.json';   // Local do arquivo JSON
+const filePathConected = './LOG/Conected.json';
+const filePathDesconected = './LOG/Desconected.json';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Lista de e-mails permitidos
 const allowedEmails = ['fsbrito@simpress.com.br'];
-// Middleware de autenticação
+
 const authenticateEmail = (req, res, next) => {
   const { email, senha } = req.body;
 
@@ -33,58 +36,56 @@ const authenticateEmail = (req, res, next) => {
 
   next();
 };
-// Middleware de autenticação para arquivos estáticos
+
 const authenticateStatic = (req, res, next) => {
-  // Supondo que a autenticação seja verificada através de uma sessão ou token
   if (req.session && req.session.isAuthenticated) {
     return next();
   } else {
     res.redirect('/'); // Redireciona para a página de login se não autenticado
   }
 };
-app.use(express.json()); // Middleware para parsing de JSON
+
+app.use(express.json());
 app.use(session({
-    secret: 'seu_segredo_aqui',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true } // Defina como true se estiver usando HTTPS
+  secret: 'seu_segredo_aqui',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true } // Defina como true se estiver usando HTTPS
 }));
 app.use(express.urlencoded({ extended: true }));
-// Use o middleware de autenticação antes do middleware estático
+
 app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
 
-// Rota protegida para servir o index.html
 app.get('/game', authenticateEmail, (req, res) => {
   res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
-// Middleware para definir cabeçalhos CORS manualmente
+
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Permite qualquer origem
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Métodos permitidos
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Cabeçalhos permitidos
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200); // Finaliza requisições OPTIONS
-    }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
 
-    next(); // Passa para a próxima função
+  next();
 });
-app.use(express.static('public'))
-// Rota de login
+
+app.use(express.static('public'));
+
 app.post('/login', (req, res) => {
-    const { email, senha } = req.body;
-console.log(email);
+  const { email, senha } = req.body;
+  console.log(email);
   console.log(senha);
-    // Verifica se o e-mail está na lista de permitidos
-    if (allowedEmails.includes(email) && senha === 'Simpress') {
-        // Configurar a sessão do usuário como autenticada
-        req.session.isAuthenticated = true;
-        res.redirect('/game/index.html');
-    } else {
-        res.status(401).send('Email ou senha incorretos.');
-    }
-});
 
+  if (allowedEmails.includes(email) && senha === 'Simpress') {
+    req.session.isAuthenticated = true;
+    res.redirect('/game');
+  } else {
+    res.status(401).send('Email ou senha incorretos.');
+  }
+});
 app.get('/conected', (req, res) => {
     fs.readFile(filePathConected, 'utf8', (err, data) => {
         if (err) {
