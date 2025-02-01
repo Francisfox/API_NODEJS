@@ -12,6 +12,9 @@ const sockets = socketio(server)
 const filePathConected = './LOG/Conected.json';         // Local do arquivo JSON
 const filePathDesconected = './LOG/Desconected.json';   // Local do arquivo JSON
 
+// Lista de e-mails permitidos
+const allowedEmails = ['fsbrito@simpress.com.br'];
+
 // Middleware para definir cabeçalhos CORS manualmente
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*'); // Permite qualquer origem
@@ -25,6 +28,23 @@ app.use((req, res, next) => {
     next(); // Passa para a próxima função
 });
 app.use(express.static('public'))
+// Rota de login
+app.post('/login', (req, res) => {
+    const { email, senha } = req.body;
+
+    // Verifica se o e-mail está na lista de permitidos
+    if (!allowedEmails.includes(email)) {
+        return res.status(403).send('Acesso negado. E-mail não autorizado.');
+    }
+
+    // Verifica se a senha está correta
+    if (senha === 'Simpress') {
+        // Redireciona para a página index.html dentro da pasta game
+        res.redirect('/game/index.html');
+    } else {
+        res.status(401).send('Email ou senha incorretos.');
+    }
+});
 
 app.get('/conected', (req, res) => {
     fs.readFile(filePathConected, 'utf8', (err, data) => {
