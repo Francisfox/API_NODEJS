@@ -42,13 +42,13 @@ const authenticateStatic = (req, res, next) => {
 };
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'seu_segredo_aqui',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true } // Defina como true se estiver usando HTTPS
+  cookie: { secure: false } // Defina como true se estiver usando HTTPS
 }));
-app.use(express.urlencoded({ extended: true }));
 app.get('/game', authenticateEmail, (req, res) => {
   res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
@@ -78,6 +78,7 @@ console.log(email);
         req.session.isAuthenticated = true;
         res.redirect('/game/index.html');
     } else {
+        req.session.isAuthenticated = false;
         res.status(401).send('Email ou senha incorretos.');
     }
 });
