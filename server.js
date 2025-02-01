@@ -49,9 +49,6 @@ app.use(session({
   cookie: { secure: true } // Defina como true se estiver usando HTTPS
 }));
 app.use(express.urlencoded({ extended: true }));
-
-app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
-
 app.get('/game', authenticateEmail, (req, res) => {
   res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
@@ -83,6 +80,10 @@ console.log(email);
     } else {
         res.status(401).send('Email ou senha incorretos.');
     }
+});
+// Rota para servir o arquivo index.html da pasta game
+app.get('/game', authenticateStatic, (req, res) => {
+  res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
 app.get('/conected', (req, res) => {
     fs.readFile(filePathConected, 'utf8', (err, data) => {
