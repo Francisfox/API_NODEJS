@@ -1,1 +1,51 @@
-<h1>Em manutenção</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Painel de Bloqueio</title>    
+        <link rel="stylesheet" href="build/css/Style.css">
+    </head>
+    <body>
+        <form class="form" action="#" method="POST" onsubmit="return validateForm()">
+            <div class="card">  
+                <div class="card-top">
+                    <h2 class="title">Painel de Bloqueio</h2>
+                    <p>Consulta Simpress</p>
+                </div>
+                <div class="card-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="Email" placeholder="Digite seu email" required>
+                </div>            
+                <div class="card-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="Senha" placeholder="Digite sua senha" required>
+                </div>
+                
+                <div class="card-group">
+                    <label for="lembrar"><input type="checkbox" id="lembrar" name="lembrar">Lembre-me</label>
+                </div>
+                <div class="card-group btn">
+                    <button type="submit">ACESSAR</button>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            function validateForm() {
+                var email = document.getElementById("email").value;
+                var senha = document.getElementById("senha").value;
+
+                if (email === "fsbrito@simpress.com.br" && senha === "Simpress") {
+                    // Redireciona para a página index.html dentro da pasta game
+                    window.location.href = "game/index.html";
+                    return false; // Impede o envio do formulário
+                } else {
+                    alert("Email ou senha incorretos.");
+                    return false; // Impede o envio do formulário
+                }
+            }
+        </script>
+    </body>
+</html>
