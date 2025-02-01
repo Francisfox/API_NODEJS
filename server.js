@@ -64,7 +64,7 @@ game.subscribe((command) => {
 sockets.on('connection', (socket) => {
     const playerId = socket.id
     console.log(`> Player connected: ${playerId}`)
-    const connectionTime = new Date().toLocaleString();
+    const connectionTime = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
     const registroConexao = {
         tipo: 'conexão',
@@ -102,7 +102,7 @@ sockets.on('connection', (socket) => {
     socket.on('disconnect', () => {
         game.removePlayer({ playerId: playerId })
         console.log(`> Player disconnected: ${playerId}`)
-        const disconnectionTime = new Date().toLocaleString();
+        const disconnectionTime = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
         const registroDesconexao = {
             tipo: 'desconexão',
