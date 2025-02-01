@@ -14,7 +14,24 @@ const filePathDesconected = './LOG/Desconected.json';   // Local do arquivo JSON
 
 // Lista de e-mails permitidos
 const allowedEmails = ['fsbrito@simpress.com.br'];
+// Middleware de autenticação
+const authenticateEmail = (req, res, next) => {
+  const { email, senha } = req.body;
 
+  if (!email || !senha) {
+    return res.status(400).send('E-mail e senha são obrigatórios.');
+  }
+
+  if (!allowedEmails.includes(email) || senha !== 'Simpress') {
+    return res.status(403).send('Acesso negado. E-mail ou senha incorretos.');
+  }
+
+  next();
+};
+// Rota protegida
+app.get('/game', authenticateEmail, (req, res) => {
+  res.sendFile(__dirname + '/game/index.html');
+});
 // Middleware para definir cabeçalhos CORS manualmente
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*'); // Permite qualquer origem
