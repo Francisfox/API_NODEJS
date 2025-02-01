@@ -25,10 +25,7 @@ app.use((req, res, next) => {
     next(); // Passa para a próxima função
 });
 app.use(express.static('public'))
-// Rota para servir o index.html dentro da pasta 'game'
-app.get('/game', (req, res) => {
-    res.sendFile(path.join(__dirname, 'game', 'index.html'));
-});
+
 app.get('/conected', (req, res) => {
     fs.readFile(filePathConected, 'utf8', (err, data) => {
         if (err) {
