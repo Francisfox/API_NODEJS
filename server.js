@@ -5,7 +5,6 @@ import socketio from 'socket.io'
 import path from 'path'
 import fs, { appendFile } from 'fs';
 import { fileURLToPath } from 'url';
-import express from 'express';
 import session from 'express-session';
 
 const app = express()
