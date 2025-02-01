@@ -28,6 +28,8 @@ const authenticateEmail = (req, res, next) => {
 
   next();
 };
+
+app.use(express.urlencoded({ extended: true }));
 // Rota protegida
 app.get('/game', authenticateEmail, (req, res) => {
   res.sendFile(__dirname + '/game/index.html');
