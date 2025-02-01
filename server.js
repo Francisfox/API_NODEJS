@@ -43,10 +43,10 @@ const authenticateStatic = (req, res, next) => {
   }
 };
 
+app.use(express.urlencoded({ extended: true }));
 // Use o middleware de autenticação antes do middleware estático
 app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
 
-app.use(express.urlencoded({ extended: true }));
 // Rota protegida para servir o index.html
 app.get('/game', authenticateEmail, (req, res) => {
   res.sendFile(path.join(__dirname, 'game', 'index.html'));
@@ -67,7 +67,8 @@ app.use(express.static('public'))
 // Rota de login
 app.post('/login', (req, res) => {
     const { email, senha } = req.body;
-
+console.log(email);
+  console.log(senha);
     // Verifica se o e-mail está na lista de permitidos
     if (allowedEmails.includes(email) && senha === 'Simpress') {
         // Configurar a sessão do usuário como autenticada
