@@ -4,7 +4,6 @@ import createGame from './public/game/game.js'
 import socketio from 'socket.io'
 import path from 'path'
 import fs, { appendFile } from 'fs';
-import cors from 'cors';
 
 const app = express()
 const server = http.createServer(app)
@@ -13,7 +12,18 @@ const sockets = socketio(server)
 const filePathConected = './LOG/Conected.json';         // Local do arquivo JSON
 const filePathDesconected = './LOG/Desconected.json';   // Local do arquivo JSON
 
-app.use(cors()); // Permite todas as origens (para testes)
+// Middleware para definir cabeçalhos CORS manualmente
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Permite qualquer origem
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Métodos permitidos
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Cabeçalhos permitidos
+
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200); // Finaliza requisições OPTIONS
+    }
+
+    next(); // Passa para a próxima função
+});
 app.use(express.static('public'))
 // Rota para servir o index.html dentro da pasta 'game'
 app.get('/game', (req, res) => {
