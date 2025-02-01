@@ -4,7 +4,7 @@ import createGame from './public/game/game.js'
 import socketio from 'socket.io'
 import path from 'path'
 import fs, { appendFile } from 'fs';
-const cors = require('cors');
+import cors from 'cors';
 
 const app = express()
 const server = http.createServer(app)
