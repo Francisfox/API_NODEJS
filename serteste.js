@@ -17,7 +17,7 @@ const filePathDesconected = './LOG/Desconected.json';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const allowedEmails = ['fsbrito@simpress.com.br'];
+const allowedEmails = ['fsbrito@simpress.com.br','francismarfox@hotmail.com'];
 
 const authenticateEmail = (req, res, next) => {
   const { email, senha } = req.body;
@@ -40,18 +40,17 @@ const authenticateStatic = (req, res, next) => {
     res.redirect('/'); // Redireciona para a página de login se não autenticado
   }
 };
+app.use(session({
+    secret: 'codigo',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Defina como true se estiver usando HTTPS
+  }));
 
 app.use(express.json());
-
-app.use(session({
-  secret: 'seu_segredo_aqui',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true } // Defina como true se estiver usando HTTPS
-}));
-app.use(express.urlencoded({ extended: true }));
-
+app.use(express.urlencoded({ extended: true }));  
 app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
+
 
 app.get('/game', authenticateEmail, (req, res) => {
   res.sendFile(path.join(__dirname, 'game', 'index.html'));
@@ -72,16 +71,22 @@ app.use((req, res, next) => {
 app.use(express.static('public'));
 
 app.post('/login', (req, res) => {
-  const { email, senha } = req.body;
-  console.log(email);
-  console.log(senha);
-
-  if (allowedEmails.includes(email) && senha === 'Simpress') {
-    req.session.isAuthenticated = true;
-    res.redirect('/game');
-  } else {
-    res.status(401).send('Email ou senha incorretos.');
-  }
+    const { email, senha } = req.body;
+    console.log(email);
+    console.log(senha);
+    // Verifica se o e-mail está na lista de permitidos
+    if (allowedEmails.includes(email) && senha === 'Simpress') {
+        // Configurar a sessão do usuário como autenticada
+        req.session.isAuthenticated = true;
+        res.redirect('./game/index.html');
+    } else {
+        req.session.isAuthenticated = false;
+        res.status(401).send('Email ou senha incorretos.');
+    }
+});
+// Rota para servir o arquivo index.html da pasta game
+app.get('/game', authenticateStatic, (req, res) => {
+  res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
 app.get('/conected', (req, res) => {
     fs.readFile(filePathConected, 'utf8', (err, data) => {

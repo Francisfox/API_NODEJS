@@ -20,6 +20,7 @@ export default function createGame() {
 
     function subscribe(observerFunction) {
         observers.push(observerFunction)
+        
     }
 
     function notifyAll(command) {
@@ -147,6 +148,7 @@ export default function createGame() {
         state,
         setState,
         subscribe,
+        observers,
         start
     }
 }

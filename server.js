@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
+import { Console } from 'console';
 
 const app = express();
 const server = http.createServer(app);
@@ -20,54 +21,46 @@ const __dirname = path.dirname(__filename);
 const allowedEmails = ['fsbrito@simpress.com.br','francismarfox@hotmail.com'];
 
 const authenticateEmail = (req, res, next) => {
-  const { email, senha } = req.body;
+    const { email, senha } = req.body;
 
-  if (!email || !senha) {
-    return res.status(400).send('E-mail e senha são obrigatórios.');
-  }
+    if (!email || !senha) {
+        return res.status(400).send('E-mail e senha são obrigatórios.');
+    }
 
-  if (!allowedEmails.includes(email) || senha !== 'Simpress') {
-    return res.status(403).send('Acesso negado. E-mail ou senha incorretos.');
-  }
-
-  next();
+    if (!allowedEmails.includes(email) || senha !== 'Simpress') {
+        return res.status(403).send('Acesso negado. E-mail ou senha incorretos.');
+    }
+    next();
 };
-
 const authenticateStatic = (req, res, next) => {
-  if (req.session && req.session.isAuthenticated) {
-    return next();
-  } else {
-    res.redirect('/'); // Redireciona para a página de login se não autenticado
-  }
+    if (req.session && req.session.isAuthenticated) {
+        return next();
+    } else {
+        res.redirect('/'); // Redireciona para a página de login se não autenticado
+    }
 };
 app.use(session({
     secret: 'codigo',
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Defina como true se estiver usando HTTPS
-  }));
-
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));  
 app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
-
-
 app.get('/game', authenticateEmail, (req, res) => {
-  res.sendFile(path.join(__dirname, 'game', 'index.html'));
+    res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
-
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-
-  next();
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
 });
-
 app.use(express.static('public'));
 
 app.post('/login', (req, res) => {
@@ -126,7 +119,7 @@ app.get('/desconected', (req, res) => {
 
 const game = createGame()
 game.start()
-
+//let cont = game.state.players // não achei a variavel que conta quantidades de login
 game.subscribe((command) => {
     console.log(`> Emitting ${command.type}`)
     sockets.emit(command.type, command)
@@ -135,6 +128,7 @@ game.subscribe((command) => {
 sockets.on('connection', (socket) => {
     const playerId = socket.id
     console.log(`> Player connected: ${playerId}`)
+    console.log(game.observers.length)
     const connectionTime = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
     const registroConexao = {
