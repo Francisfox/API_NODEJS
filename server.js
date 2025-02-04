@@ -18,7 +18,7 @@ const filePathDesconected = './LOG/Desconected.json';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const allowedEmails = ['fsbrito@simpress.com.br','francismarfox@hotmail.com'];
+const allowedEmails = ['fsbrito@simpress.com.br','francismarfox@hotmail.com', 'ssilva@simpress.com.br'];
 
 const authenticateEmail = (req, res, next) => {
     const { email, senha } = req.body;
