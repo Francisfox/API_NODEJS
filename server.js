@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import createGame from './game/game.js';
+import { criarTerritorio } from './territorio/territorio.js';
 import socketio from 'socket.io';
 import path from 'path';
 import fs from 'fs';
@@ -48,6 +49,19 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));  
 app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
+
+// Territorio Ativo: uma pagina so, com os dados ficticios e a regra de acesso
+// dentro de territorio/territorio.js. Passa pela MESMA sessao do jogo, e o
+// recorte de linhas usa o e-mail gravado no login.
+app.use('/territorio', authenticateStatic, criarTerritorio({
+    emails: allowedEmails,
+    masters: ['fsbrito@simpress.com.br'],
+}));
+
+// Menu: a tela que troca entre o jogo e o territorio depois do login.
+app.get('/menu', authenticateStatic, (req, res) => {
+    res.send(paginaMenu(req.session.email));
+});
 app.get('/game', authenticateEmail, (req, res) => {
     res.sendFile(path.join(__dirname, 'game', 'index.html'));
 });
@@ -71,7 +85,10 @@ app.post('/login', (req, res) => {
     if (allowedEmails.includes(email) && senha === 'Simpress') {
         // Configurar a sessão do usuário como autenticada
         req.session.isAuthenticated = true;
-        res.redirect('./game/index.html');
+        // O e-mail fica na sessao porque o Territorio recorta as linhas por
+        // ele. Sem isto, a pagina nao teria como saber de quem e a carteira.
+        req.session.email = email;
+        res.redirect('/menu');
     } else {
         req.session.isAuthenticated = false;
         res.status(401).send('Email ou senha incorretos.');
@@ -207,6 +224,58 @@ sockets.on('connection', (socket) => {
         game.movePlayer(command)
     })
 })
+
+function paginaMenu(email) {
+    const seguro = String(email || '').replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Menu - Simpress</title>
+    <style>
+        body { margin: 0; min-height: 100vh; display: flex; align-items: center;
+               justify-content: center; background: #f1f5f9; color: #1d2b38;
+               font: 14px/1.5 -apple-system, "Segoe UI", Arial, sans-serif; }
+        .caixa { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+                 padding: 32px; width: 380px; max-width: calc(100vw - 32px);
+                 box-shadow: 0 4px 17px rgba(0,0,0,.08); }
+        h1 { font-size: 19px; margin: 0 0 4px; }
+        .sub { color: #64748b; margin: 0 0 24px; font-size: 13px; }
+        a.item { display: block; padding: 14px 16px; margin-bottom: 10px;
+                 border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none;
+                 color: inherit; }
+        a.item:hover { background: #f8fafc; border-color: #cbd5e1; }
+        a.item strong { display: block; }
+        a.item span { color: #64748b; font-size: 12px; }
+        .sair { display: inline-block; margin-top: 8px; color: #64748b; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="caixa">
+        <h1>Simpress</h1>
+        <p class="sub">${seguro}</p>
+
+        <a class="item" href="/territorio">
+            <strong>Territorio Ativo</strong>
+            <span>Os registros da sua carteira &mdash; dados ficticios</span>
+        </a>
+        <a class="item" href="/game/index.html">
+            <strong>Jogo multiplayer</strong>
+            <span>Teste de conexao em tempo real</span>
+        </a>
+
+        <a class="sair" href="/sair">Sair</a>
+    </div>
+</body>
+</html>`;
+}
+
+app.get('/sair', (req, res) => {
+    req.session.destroy(() => res.redirect('/'));
+});
 
 server.listen(3000, () => {
     console.log(`> Server listening on port: 3000`)
