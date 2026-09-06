@@ -38,11 +38,15 @@ export default function createGame() {
         const playerX = 'playerX' in command ? command.playerX : Math.floor(Math.random() * state.screen.width)
         const playerY = 'playerY' in command ? command.playerY : Math.floor(Math.random() * state.screen.height)
         const score = 0
+        // O e-mail acompanha o jogador para a tabela de pontos poder mostrar
+        // quem e quem. Vem do servidor; no cliente chega junto no comando.
+        const email = 'email' in command ? command.email : null
 
         state.players[playerId] = {
             x: playerX,
             y: playerY,
-            score
+            score,
+            email
         }
 
         notifyAll({
@@ -50,6 +54,7 @@ export default function createGame() {
             playerId: playerId,
             playerX: playerX,
             playerY: playerY,
+            email,
             score
         })
     }

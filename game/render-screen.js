@@ -55,6 +55,7 @@ function updateScoreTable(scoreTable, game, currentPlayerId) {
             x: player.x,
             y: player.y,
             score: player.score,
+            email: player.email,
         })
     }
     
@@ -75,22 +76,37 @@ function updateScoreTable(scoreTable, game, currentPlayerId) {
     scoreTableInnerHTML = topScorePlayers.reduce((stringFormed, player) => {
         return stringFormed + `
             <tr ${player.playerId === currentPlayerId ? 'class="current-player"' : ''}>
-                <td>${player.playerId}</td>
-                <td>${player.score}</td>
+                <td class="socket-id">${identificar(player)}</td>
+                <td class="score-value">${player.score}</td>
             </tr>
         `
     }, scoreTableInnerHTML)
 
-    const currentPlayerFromTopScore = topScorePlayers[currentPlayerId]
+    // A linha do proprio jogador, repetida no rodape. Antes indexava o array
+    // pelo id do socket (topScorePlayers[currentPlayerId]), o que dava sempre
+    // undefined e a linha nunca aparecia - array se procura, nao se indexa
+    // por chave.
+    const currentPlayerFromTopScore =
+        topScorePlayers.find(player => player.playerId === currentPlayerId)
 
     if (currentPlayerFromTopScore) {
         scoreTableInnerHTML += `
-            <tr class="current-player bottom">
-                <td class="socket-id">${currentPlayerFromTopScore.id} EU </td>
+            <tr class="current-player footer">
+                <td class="socket-id">${identificar(currentPlayerFromTopScore)} (voce)</td>
                 <td class="score-value">${currentPlayerFromTopScore.score}</td>
             </tr>
         `
     }
 
     scoreTable.innerHTML = scoreTableInnerHTML
+}
+
+// Quem o jogador e na tabela: o e-mail do login. O id do socket fica como
+// reserva - uma aba aberta sem sessao ainda precisa aparecer em algum lugar.
+// Escapado porque vai para innerHTML.
+function identificar(player) {
+    const bruto = player.email || `anonimo (${String(player.playerId).slice(0, 6)})`
+
+    return String(bruto).replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 }

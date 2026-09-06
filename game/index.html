@@ -1,15 +1,47 @@
-<html>
+<html lang="pt-BR">
     <head>
         <meta charset="utf-8">
-        <title>Jogo Multiplayer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Jogo multiplayer</title>
 
         <style>
             body {
-                margin: 40px 0 0 0;
+                margin: 0;
                 padding: 0;
                 background-color: #EEE;
                 text-align: center;
             }
+
+            /* Mesmo cabecalho do Territorio, para as duas paginas serem
+               reconheciveis como a mesma aplicacao e nenhuma delas ser um
+               beco sem saida. */
+            header {
+                background: #243544;
+                color: #fff;
+                padding: 14px 24px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                flex-wrap: wrap;
+                text-align: left;
+                font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+            }
+
+            header h1 { font-size: 17px; margin: 0; font-weight: 600; }
+            header nav { margin-left: auto; display: flex; gap: 8px; }
+
+            header a {
+                color: #fff;
+                text-decoration: none;
+                font-size: 13px;
+                padding: 6px 12px;
+                border: 1px solid rgba(255,255,255,.35);
+                border-radius: 6px;
+            }
+
+            header a:hover { background: rgba(255,255,255,.12); }
+
+            #jogo { margin-top: 40px; }
 
             #screen {
                 border: 1px solid #CCC;
@@ -53,7 +85,7 @@
             #score-table .socket-id {
                 font-weight: normal;
                 color: #222;
-                width: 150px;
+                width: 220px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -75,8 +107,18 @@
         <script src="/socket.io/socket.io.js"></script>
     </head>
     <body>
-        <canvas id="screen" width="10" height="10"></canvas>
-        <table id="score-table"></table>
+        <header>
+            <h1>Jogo multiplayer</h1>
+            <nav>
+                <a href="/menu">Menu</a>
+                <a href="/territorio">Territorio</a>
+            </nav>
+        </header>
+
+        <div id="jogo">
+            <canvas id="screen" width="10" height="10"></canvas>
+            <table id="score-table"></table>
+        </div>
 
         <script type="module">
             import createGame from './game.js'
