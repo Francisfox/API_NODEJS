@@ -40,12 +40,20 @@ const authenticateStatic = (req, res, next) => {
         res.redirect('/'); // Redireciona para a página de login se não autenticado
     }
 };
-app.use(session({
+// A sessao fica numa variavel para ser usada nos DOIS lados: no Express e no
+// socket.io. Sem isso o servidor sabe o e-mail de quem pediu a pagina, mas nao
+// o de quem abriu a conexao do jogo - e a tabela de pontos so teria o ID.
+const sessionMiddleware = session({
     secret: 'codigo',
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Defina como true se estiver usando HTTPS
-}));
+});
+app.use(sessionMiddleware);
+
+// O mesmo middleware no handshake do socket: le o cookie da conexao e devolve
+// a sessao ja montada em socket.request.session.
+sockets.use((socket, next) => sessionMiddleware(socket.request, {}, next));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));  
 app.use('/game', authenticateStatic, express.static(path.join(__dirname, 'game')));
@@ -151,6 +159,7 @@ sockets.on('connection', (socket) => {
     const registroConexao = {
         tipo: 'conexão',
         ID: playerId,
+        email: (socket.request.session && socket.request.session.email) || null,
         horario: connectionTime,
     };
     // Lê o arquivo Conected.json para adicionar o novo registro
@@ -178,7 +187,11 @@ sockets.on('connection', (socket) => {
         });
     });
 
-    game.addPlayer({ playerId: playerId })
+    // O e-mail vem da sessao do login, nao do navegador: fosse enviado pelo
+    // cliente, qualquer um poderia aparecer na tabela com o nome de outro.
+    const email = (socket.request.session && socket.request.session.email) || null;
+
+    game.addPlayer({ playerId: playerId, email: email })
     socket.emit('setup', game.state)
 
     socket.on('disconnect', () => {
